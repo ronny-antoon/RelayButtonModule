@@ -39,7 +39,7 @@ ButtonModule::ButtonModule(int8_t buttonPin, uint8_t activeLevel, uint16_t longP
 
 ButtonModule::~ButtonModule()
 {
-    ESP_LOGI(TAG, "Destroying ButtonModule");
+    ESP_LOGI(TAG, "Deinitializing ButtonModule");
     if (m_buttonHandle != nullptr)
     {
         iot_button_delete(m_buttonHandle);

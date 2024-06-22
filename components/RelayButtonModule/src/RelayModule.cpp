@@ -35,6 +35,11 @@ RelayModule::RelayModule(int8_t relayPin, int8_t activeLevel, int8_t initialStat
     }
 }
 
+RelayModule::~RelayModule()
+{
+    ESP_LOGI(TAG, "Deinitializing RelayModule with pin: %d", m_relayPin);
+}
+
 void RelayModule::setPower(bool newState)
 {
     ESP_LOGD(TAG, "Setting relay power state to: %s", newState ? "ON" : "OFF");

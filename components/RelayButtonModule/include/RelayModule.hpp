@@ -2,6 +2,8 @@
 
 #include "RelayModuleInterface.hpp"
 
+#include <driver/gpio.h>
+
 /**
  * @brief Implementation of a relay module.
  *
@@ -22,7 +24,7 @@ public:
     /**
      * @brief Destroy the Relay Module object.
      */
-    virtual ~RelayModule() = default;
+    virtual ~RelayModule();
 
     /**
      * @brief Set the relay power state.
