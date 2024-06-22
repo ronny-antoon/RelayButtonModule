@@ -3,8 +3,7 @@ name: Build Test Application
 on:
   workflow_call: {}
   workflow_dispatch: {}
-  on:
-    push:
+  push:
 jobs:
   build:
     name: Build Test App
