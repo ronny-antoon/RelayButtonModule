@@ -1,0 +1,9 @@
+dependencies:
+  espressif/button:
+    require: public
+    version: 3.2.0
+  idf:
+    version: '>=4.1.0'
+description: 'The RelayButtonModule component provides a comprehensive interface for controlling relays and handling button events on the ESP32 platform.'
+license: MIT
+version: 0.0.1
