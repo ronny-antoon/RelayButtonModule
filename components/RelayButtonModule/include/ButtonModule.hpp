@@ -14,12 +14,13 @@ public:
     /**
      * @brief Construct a new Button Module object.
      *
-     * @param buttonPin The GPIO pin number connected to the button.
-     * @param activeLevel The active level of the button (1 for active high, 0 for active low).
-     * @param longPressTimeMs The time in milliseconds to consider a press as a long press.
-     * @param shortPressTimeMs The time in milliseconds to consider a press as a short press.
+     * @param pin The GPIO pin number connected to the button.
+     * @param isActiveHigh The active level of the button (1 for active high, 0 for active low).
+     * @param longPressDurationMs The time in milliseconds to consider a press as a long press.
+     * @param debounceTimeMs The time in milliseconds to consider a press as a short press.
      */
-    ButtonModule(int8_t buttonPin = -1, uint8_t activeLevel = 1, uint16_t longPressTimeMs = 2000, uint16_t shortPressTimeMs = 100);
+    ButtonModule(int8_t pin = -1, uint8_t isActiveHigh = CONFIG_R_B_M_ACTIVE_HIGH,
+                 uint16_t longPressDurationMs = CONFIG_R_B_M_LONG_PRESS_TIME, uint16_t debounceTimeMs = CONFIG_R_B_M_DEBOUNCE_TIME);
 
     /**
      * @brief Destroy the Button Module object.
@@ -54,8 +55,17 @@ private:
     CallbackButtonFunction m_singlePressCallback; ///< Callback for single press.
     CallbackButtonFunction m_doublePressCallback; ///< Callback for double press.
     CallbackButtonFunction m_longPressCallback;   ///< Callback for long press.
-    AnyType * m_singlePressCallbackParameter;     ///< Parameter for single press callback.
-    AnyType * m_doublePressCallbackParameter;     ///< Parameter for double press callback.
-    AnyType * m_longPressCallbackParameter;       ///< Parameter for long press callback.
+    AnyType * m_singlePressCallbackParam;         ///< Parameter for single press callback.
+    AnyType * m_doublePressCallbackParam;         ///< Parameter for double press callback.
+    AnyType * m_longPressCallbackParam;           ///< Parameter for long press callback.
     button_handle_t m_buttonHandle;               ///< Handle for the button.
+
+    // delete the copy constructor and the assignment operator
+    ButtonModule(const ButtonModule &)             = delete;
+    ButtonModule & operator=(const ButtonModule &) = delete;
+
+    // Helper methods for callback registration
+    void registerSinglePressCallback();
+    void registerDoublePressCallback();
+    void registerLongPressCallback();
 };

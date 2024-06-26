@@ -4,25 +4,25 @@
 
 static const char * TAG = "ButtonModule";
 
-ButtonModule::ButtonModule(int8_t buttonPin, uint8_t activeLevel, uint16_t longPressTimeMs, uint16_t shortPressTimeMs)
+ButtonModule::ButtonModule(int8_t pin, uint8_t isActiveHigh, uint16_t longPressDurationMs, uint16_t debounceTimeMs)
 {
-    ESP_LOGI(TAG, "Initializing ButtonModule with pin: %d, active level: %d, long press time: %d ms, short press time: %d ms",
-             buttonPin, activeLevel, longPressTimeMs, shortPressTimeMs);
+    ESP_LOGI(TAG, "Initializing ButtonModule with pin: %d, active level: %d, long press duration: %d ms, debounce time: %d ms", pin,
+             isActiveHigh, longPressDurationMs, debounceTimeMs);
 
-    if (buttonPin < 0)
+    if (pin < 0)
     {
-        ESP_LOGE(TAG, "Invalid button pin number: %d", buttonPin);
+        ESP_LOGE(TAG, "Invalid button pin number: %d", pin);
         return;
     }
 
-    gpio_set_direction((gpio_num_t) buttonPin, GPIO_MODE_INPUT);
+    gpio_set_direction(static_cast<gpio_num_t>(pin), GPIO_MODE_INPUT);
 
     button_config_t buttonConfig = { .type               = BUTTON_TYPE_GPIO,
-                                     .long_press_time    = longPressTimeMs,
-                                     .short_press_time   = shortPressTimeMs,
+                                     .long_press_time    = longPressDurationMs,
+                                     .short_press_time   = debounceTimeMs,
                                      .gpio_button_config = {
-                                         .gpio_num     = buttonPin,
-                                         .active_level = activeLevel,
+                                         .gpio_num     = pin,
+                                         .active_level = isActiveHigh,
                                      } };
 
     m_buttonHandle = iot_button_create(&buttonConfig);
@@ -51,9 +51,34 @@ void ButtonModule::setSinglePressCallback(CallbackButtonFunction callback, AnyTy
 {
     ESP_LOGI(TAG, "Setting single press callback");
 
-    m_singlePressCallback          = callback;
-    m_singlePressCallbackParameter = callbackParameter;
+    m_singlePressCallback      = callback;
+    m_singlePressCallbackParam = callbackParameter;
 
+    registerSinglePressCallback();
+}
+
+void ButtonModule::setDoublePressCallback(CallbackButtonFunction callback, AnyType * callbackParameter)
+{
+    ESP_LOGI(TAG, "Setting double press callback");
+
+    m_doublePressCallback      = callback;
+    m_doublePressCallbackParam = callbackParameter;
+
+    registerDoublePressCallback();
+}
+
+void ButtonModule::setLongPressCallback(CallbackButtonFunction callback, AnyType * callbackParameter)
+{
+    ESP_LOGI(TAG, "Setting long press callback");
+
+    m_longPressCallback      = callback;
+    m_longPressCallbackParam = callbackParameter;
+
+    registerLongPressCallback();
+}
+
+void ButtonModule::registerSinglePressCallback()
+{
     iot_button_register_cb(
         m_buttonHandle, BUTTON_SINGLE_CLICK,
         [](void * buttonHandle, void * thisPtr) {
@@ -61,19 +86,14 @@ void ButtonModule::setSinglePressCallback(CallbackButtonFunction callback, AnyTy
             ButtonModule * buttonModule = static_cast<ButtonModule *>(thisPtr);
             if (buttonModule->m_singlePressCallback)
             {
-                buttonModule->m_singlePressCallback(buttonModule->m_singlePressCallbackParameter);
+                buttonModule->m_singlePressCallback(buttonModule->m_singlePressCallbackParam);
             }
         },
         this);
 }
 
-void ButtonModule::setDoublePressCallback(CallbackButtonFunction callback, AnyType * callbackParameter)
+void ButtonModule::registerDoublePressCallback()
 {
-    ESP_LOGI(TAG, "Setting double press callback");
-
-    m_doublePressCallback          = callback;
-    m_doublePressCallbackParameter = callbackParameter;
-
     iot_button_register_cb(
         m_buttonHandle, BUTTON_DOUBLE_CLICK,
         [](void * buttonHandle, void * thisPtr) {
@@ -81,19 +101,14 @@ void ButtonModule::setDoublePressCallback(CallbackButtonFunction callback, AnyTy
             ButtonModule * buttonModule = static_cast<ButtonModule *>(thisPtr);
             if (buttonModule->m_doublePressCallback)
             {
-                buttonModule->m_doublePressCallback(buttonModule->m_doublePressCallbackParameter);
+                buttonModule->m_doublePressCallback(buttonModule->m_doublePressCallbackParam);
             }
         },
         this);
 }
 
-void ButtonModule::setLongPressCallback(CallbackButtonFunction callback, AnyType * callbackParameter)
+void ButtonModule::registerLongPressCallback()
 {
-    ESP_LOGI(TAG, "Setting long press callback");
-
-    m_longPressCallback          = callback;
-    m_longPressCallbackParameter = callbackParameter;
-
     iot_button_register_cb(
         m_buttonHandle, BUTTON_LONG_PRESS_START,
         [](void * buttonHandle, void * thisPtr) {
@@ -101,7 +116,7 @@ void ButtonModule::setLongPressCallback(CallbackButtonFunction callback, AnyType
             ButtonModule * buttonModule = static_cast<ButtonModule *>(thisPtr);
             if (buttonModule->m_longPressCallback)
             {
-                buttonModule->m_longPressCallback(buttonModule->m_longPressCallbackParameter);
+                buttonModule->m_longPressCallback(buttonModule->m_longPressCallbackParam);
             }
         },
         this);

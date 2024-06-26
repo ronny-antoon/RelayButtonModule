@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RelayModuleInterface.hpp"
-
 #include <driver/gpio.h>
 
 /**
@@ -15,11 +14,11 @@ public:
     /**
      * @brief Construct a new Relay Module object.
      *
-     * @param relayPin The GPIO pin number connected to the relay.
-     * @param activeLevel The active level of the relay (1 for active high, 0 for active low).
-     * @param initialState The initial state of the relay (1 for on, 0 for off, -1 for no change).
+     * @param pin The GPIO pin number connected to the relay.
+     * @param isActiveHigh The active level of the relay (1 for active high, 0 for active low).
+     * @param initialRelayState The initial state of the relay (1 for on, 0 for off, -1 for no change).
      */
-    RelayModule(int8_t relayPin = -1, int8_t activeLevel = 1, int8_t initialState = -1);
+    RelayModule(int8_t pin = -1, int8_t isActiveHigh = CONFIG_R_B_M_ACTIVE_HIGH, int8_t initialRelayState = -1);
 
     /**
      * @brief Destroy the Relay Module object.
@@ -41,6 +40,13 @@ public:
     bool isOn() override;
 
 private:
-    gpio_num_t m_relayPin; ///< The GPIO pin number connected to the relay.
-    int8_t m_activeLevel;  ///< The active level of the relay (1 for active high, 0 for active low).
+    gpio_num_t m_pin;      ///< The GPIO pin number connected to the relay.
+    int8_t m_isActiveHigh; ///< The active level of the relay (1 for active high, 0 for active low).
+
+    // delete the copy constructor and the assignment operator
+    RelayModule(const RelayModule &)             = delete;
+    RelayModule & operator=(const RelayModule &) = delete;
+
+    // Helper method for initialization
+    void initializeRelay(int8_t initialRelayState);
 };

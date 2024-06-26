@@ -1,0 +1,19 @@
+menu "Relay Button Module"
+    config R_B_M_LONG_PRESS_TIME
+        int "Long Press Time (ms)"
+        default 2000
+        help
+          The time in milliseconds that the button must be pressed to be considered a long press.
+
+    config R_B_M_DEBOUNCE_TIME
+        int "Debounce Time (ms)"
+        default 50
+        help
+          The time in milliseconds that the button must be stable to be considered a valid press.
+
+    config R_B_M_ACTIVE_HIGH
+        bool "High Active"
+        default y
+        help
+          Whether the relay/button is active high or active low.
+endmenu
