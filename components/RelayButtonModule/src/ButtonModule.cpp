@@ -84,7 +84,7 @@ void ButtonModule::registerSinglePressCallback()
         [](void * buttonHandle, void * thisPtr) {
             ESP_LOGD(TAG, "Single press detected");
             ButtonModule * buttonModule = static_cast<ButtonModule *>(thisPtr);
-            if (buttonModule->m_singlePressCallback)
+            if (buttonModule && buttonModule->m_singlePressCallback)
             {
                 buttonModule->m_singlePressCallback(buttonModule->m_singlePressCallbackParam);
             }
@@ -99,7 +99,7 @@ void ButtonModule::registerDoublePressCallback()
         [](void * buttonHandle, void * thisPtr) {
             ESP_LOGD(TAG, "Double press detected");
             ButtonModule * buttonModule = static_cast<ButtonModule *>(thisPtr);
-            if (buttonModule->m_doublePressCallback)
+            if (buttonModule && buttonModule->m_doublePressCallback)
             {
                 buttonModule->m_doublePressCallback(buttonModule->m_doublePressCallbackParam);
             }
@@ -114,7 +114,7 @@ void ButtonModule::registerLongPressCallback()
         [](void * buttonHandle, void * thisPtr) {
             ESP_LOGD(TAG, "Long press detected");
             ButtonModule * buttonModule = static_cast<ButtonModule *>(thisPtr);
-            if (buttonModule->m_longPressCallback)
+            if (buttonModule && buttonModule->m_longPressCallback)
             {
                 buttonModule->m_longPressCallback(buttonModule->m_longPressCallbackParam);
             }
