@@ -16,6 +16,8 @@ RelayModule::RelayModule(int8_t pin, int8_t isActiveHigh, int8_t initialRelaySta
         return;
     }
 
+    gpio_reset_pin(m_pin);
+
     gpio_set_direction(m_pin, GPIO_MODE_INPUT_OUTPUT);
 
     initializeRelay(initialRelayState);

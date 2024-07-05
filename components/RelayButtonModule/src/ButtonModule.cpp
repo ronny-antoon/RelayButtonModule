@@ -15,6 +15,8 @@ ButtonModule::ButtonModule(int8_t pin, uint8_t isActiveHigh, uint16_t longPressD
         return;
     }
 
+    gpio_reset_pin(static_cast<gpio_num_t>(pin));
+
     gpio_set_direction(static_cast<gpio_num_t>(pin), GPIO_MODE_INPUT);
 
     button_config_t buttonConfig = { .type               = BUTTON_TYPE_GPIO,
