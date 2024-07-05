@@ -7,7 +7,7 @@ menu "Relay Button Module"
 
     config R_B_M_DEBOUNCE_TIME
         int "Debounce Time (ms)"
-        default 50
+        default 80
         help
           The time in milliseconds that the button must be stable to be considered a valid press.
 

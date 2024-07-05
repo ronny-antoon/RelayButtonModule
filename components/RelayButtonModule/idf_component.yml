@@ -3,9 +3,9 @@ dependencies:
     require: public
     version: '3.2.1'
   idf:
-    version: '>=4.0'
+    version: '>=5.0.0'
 description: 'The RelayButtonModule component provides a comprehensive interface for controlling relays and handling button events on the ESP32 platform.'
 repository: 'https://github.com/ronny-antoon/RelayButtonModule/tree/v1.0.0'
 url: 'https://github.com/ronny-antoon/RelayButtonModule/tree/v1.0.0'
 license: MIT
-version: '4.0.0'
+version: '4.1.0'
