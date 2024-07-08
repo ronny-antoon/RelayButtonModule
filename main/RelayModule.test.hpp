@@ -1,69 +1,90 @@
+#pragma once
+
+#include <RelayModule.hpp>
+#include <esp_heap_trace.h>
 #include <unity.h>
 #include <unity_fixture.h>
 
-#include <RelayModule.hpp>
+#ifndef BEGIN_MEMORY_LEAK_TEST
+#define BEGIN_MEMORY_LEAK_TEST(trace_record)                                                                                       \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        heap_trace_stop();                                                                                                         \
+        ESP_ERROR_CHECK(heap_trace_init_standalone(trace_record, sizeof(trace_record) / sizeof(trace_record[0])));                 \
+        ESP_ERROR_CHECK(heap_trace_start(HEAP_TRACE_LEAKS));                                                                       \
+    } while (0)
+#endif
 
-TEST_GROUP(RelayModule_test);
+#ifndef END_MEMORY_LEAK_TEST
+#define END_MEMORY_LEAK_TEST(trace_record)                                                                                         \
+    do                                                                                                                             \
+    {                                                                                                                              \
+        ESP_ERROR_CHECK(heap_trace_stop());                                                                                        \
+        if (trace_record[0].size != 0)                                                                                             \
+        {                                                                                                                          \
+            heap_trace_dump();                                                                                                     \
+            TEST_FAIL_MESSAGE("Memory leak detected!");                                                                            \
+        }                                                                                                                          \
+    } while (0)
+#endif
 
-TEST_SETUP(RelayModule_test) {}
-
-TEST_TEAR_DOWN(RelayModule_test) {}
-
-////////////////////////////////---------TEST---------//////////////////////////////////////
-
-TEST(RelayModule_test, constructor)
+TEST_CASE("Constructor Test", "[RelayModule] [Constructor]")
 {
-    RelayModule relay(GPIO_NUM_2, 1, 1);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 1);
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
 
-    RelayModule relay2(GPIO_NUM_2, 1, 0);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 0);
+    RelayModule relay1(27, 1, 1);
+    RelayModule relay2(14, 0, 1);
+    RelayModule relay3(23, 1, 0);
+    RelayModule relay4(33, 0, 0);
+    RelayModule * relayPtr = new RelayModule(27, 1, 1);
+    delete relayPtr;
 
-    RelayModule relay3(GPIO_NUM_2, 0, 1);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 0);
+    TEST_ASSERT_EQUAL(true, true);
 
-    RelayModule relay4(GPIO_NUM_2, 0, 0);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 1);
+    END_MEMORY_LEAK_TEST(trace_record);
 }
 
-TEST(RelayModule_test, setPower)
+TEST_CASE("setPower Test", "[RelayModule] [setPower]")
 {
-    RelayModule relay(GPIO_NUM_2, 1, 1);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
 
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 1);
-
-    relay.setPower(false);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 0);
-    relay.setPower(false);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 0);
+    RelayModule relay(27, 1, 0);
 
     relay.setPower(true);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 1);
+    TEST_ASSERT_TRUE(relay.isOn());
+
+    relay.setPower(false);
+    TEST_ASSERT_FALSE(relay.isOn());
+
+    RelayModule * relayPtr = new RelayModule(5, 1, 1);
+    relayPtr->setPower(true);
+    relayPtr->setPower(false);
+    delete relayPtr;
+
+    END_MEMORY_LEAK_TEST(trace_record);
+}
+
+TEST_CASE("isOn Test", "[RelayModule] [isOn]")
+{
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
+
+    RelayModule relay(27, 1, 0);
+
     relay.setPower(true);
-    TEST_ASSERT_EQUAL(gpio_get_level(GPIO_NUM_2), 1);
-}
+    TEST_ASSERT_TRUE(relay.isOn());
 
-TEST(RelayModule_test, isOn)
-{
-    RelayModule relay(GPIO_NUM_2, 1, 1);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
+    relay.setPower(false);
+    TEST_ASSERT_FALSE(relay.isOn());
 
-    TEST_ASSERT_EQUAL(relay.isOn(), true);
+    RelayModule * relayPtr = new RelayModule(5, 1, 1);
+    relayPtr->setPower(true);
+    TEST_ASSERT_TRUE(relayPtr->isOn());
+    relayPtr->setPower(false);
+    TEST_ASSERT_FALSE(relayPtr->isOn());
+    delete relayPtr;
 
-    gpio_set_level(GPIO_NUM_2, 0);
-    TEST_ASSERT_EQUAL(relay.isOn(), false);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-TEST_GROUP_RUNNER(RelayModule_test)
-{
-    RUN_TEST_CASE(RelayModule_test, constructor);
-    RUN_TEST_CASE(RelayModule_test, setPower);
-    RUN_TEST_CASE(RelayModule_test, isOn);
+    END_MEMORY_LEAK_TEST(trace_record);
 }

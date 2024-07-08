@@ -4,12 +4,19 @@
 
 static const char * TAG = "ButtonModule";
 
-ButtonModule::ButtonModule(int8_t pin, uint8_t isActiveHigh, uint16_t longPressDurationMs, uint16_t debounceTimeMs)
+ButtonModule::ButtonModule(int8_t pin, uint8_t isActiveHigh, uint16_t longPressDurationMs, uint16_t debounceTimeMs):
+    m_singlePressCallback(nullptr),
+    m_doublePressCallback(nullptr),
+    m_longPressCallback(nullptr),
+    m_singlePressCallbackParam(nullptr),
+    m_doublePressCallbackParam(nullptr),
+    m_longPressCallbackParam(nullptr),
+    m_buttonHandle(nullptr)
 {
     ESP_LOGI(TAG, "Initializing ButtonModule with pin: %d, active level: %d, long press duration: %d ms, debounce time: %d ms", pin,
              isActiveHigh, longPressDurationMs, debounceTimeMs);
 
-    if (pin < 0)
+    if (pin <= 0)
     {
         ESP_LOGE(TAG, "Invalid button pin number: %d", pin);
         return;
@@ -81,6 +88,12 @@ void ButtonModule::setLongPressCallback(CallbackButtonFunction callback, AnyType
 
 void ButtonModule::registerSinglePressCallback()
 {
+    if(m_buttonHandle == nullptr)
+    {
+        ESP_LOGE(TAG, "Button handle is null");
+        return;
+    }
+    
     iot_button_register_cb(
         m_buttonHandle, BUTTON_SINGLE_CLICK,
         [](void * buttonHandle, void * thisPtr) {
@@ -96,6 +109,12 @@ void ButtonModule::registerSinglePressCallback()
 
 void ButtonModule::registerDoublePressCallback()
 {
+    if(m_buttonHandle == nullptr)
+    {
+        ESP_LOGE(TAG, "Button handle is null");
+        return;
+    }
+
     iot_button_register_cb(
         m_buttonHandle, BUTTON_DOUBLE_CLICK,
         [](void * buttonHandle, void * thisPtr) {
@@ -111,6 +130,12 @@ void ButtonModule::registerDoublePressCallback()
 
 void ButtonModule::registerLongPressCallback()
 {
+    if(m_buttonHandle == nullptr)
+    {
+        ESP_LOGE(TAG, "Button handle is null");
+        return;
+    }
+
     iot_button_register_cb(
         m_buttonHandle, BUTTON_LONG_PRESS_START,
         [](void * buttonHandle, void * thisPtr) {
