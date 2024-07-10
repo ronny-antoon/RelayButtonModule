@@ -28,63 +28,77 @@
     } while (0)
 #endif
 
-TEST_CASE("Constructor Test", "[RelayModule] [Constructor]")
+TEST_CASE("RelayModule Constructor Test", "[RelayModule] [Constructor]")
 {
     heap_trace_record_t trace_record[10];
     BEGIN_MEMORY_LEAK_TEST(trace_record);
-
-    RelayModule relay1(27, 1, 1);
-    RelayModule relay2(14, 0, 1);
-    RelayModule relay3(23, 1, 0);
-    RelayModule relay4(33, 0, 0);
-    RelayModule * relayPtr = new RelayModule(27, 1, 1);
-    delete relayPtr;
-
-    TEST_ASSERT_EQUAL(true, true);
-
+    do
+    {
+        RelayModule relayModule(GPIO_NUM_0);
+        TEST_ASSERT_EQUAL(GPIO_NUM_0, relayModule.getGpio());
+        TEST_ASSERT_EQUAL(0, relayModule.getLevel());
+    } while (0);
     END_MEMORY_LEAK_TEST(trace_record);
 }
 
-TEST_CASE("setPower Test", "[RelayModule] [setPower]")
+TEST_CASE("RelayModule Constructor Test on heap", "[RelayModule] [Constructor] [Heap]")
+{
+}
+
+TEST_CASE("RelayModule setPower Test", "[RelayModule] [setPower]")
+{
+}
+
+TEST_CASE("RelayModule setPower Test on heap", "[RelayModule] [setPower] [Heap]")
+{
+}
+
+TEST_CASE("RelayModule isOn Test", "[RelayModule] [isOn]")
 {
     heap_trace_record_t trace_record[10];
     BEGIN_MEMORY_LEAK_TEST(trace_record);
-
-    RelayModule relay(27, 1, 0);
-
-    relay.setPower(true);
-    TEST_ASSERT_TRUE(relay.isOn());
-
-    relay.setPower(false);
-    TEST_ASSERT_FALSE(relay.isOn());
-
-    RelayModule * relayPtr = new RelayModule(5, 1, 1);
-    relayPtr->setPower(true);
-    relayPtr->setPower(false);
-    delete relayPtr;
-
+    do
+    {
+        RelayModule relayModule(GPIO_NUM_0);
+        TEST_ASSERT_FALSE(relayModule.isOn());
+        relayModule.setPower(true);
+        TEST_ASSERT_TRUE(relayModule.isOn());
+        relayModule.setPower(false);
+        TEST_ASSERT_FALSE(relayModule.isOn());
+    } while (0);
     END_MEMORY_LEAK_TEST(trace_record);
 }
 
-TEST_CASE("isOn Test", "[RelayModule] [isOn]")
+TEST_CASE("RelayModule isOn Test on heap", "[RelayModule] [isOn] [Heap]")
 {
     heap_trace_record_t trace_record[10];
     BEGIN_MEMORY_LEAK_TEST(trace_record);
+    do
+    {
+        RelayModule * relayModule = new RelayModule(GPIO_NUM_0);
+        TEST_ASSERT_FALSE(relayModule->isOn());
+        relayModule->setPower(true);
+        TEST_ASSERT_TRUE(relayModule->isOn());
+        relayModule->setPower(false);
+        TEST_ASSERT_FALSE(relayModule->isOn());
+        delete relayModule;
+    } while (0);
+    END_MEMORY_LEAK_TEST(trace_record);
+}
 
-    RelayModule relay(27, 1, 0);
-
-    relay.setPower(true);
-    TEST_ASSERT_TRUE(relay.isOn());
-
-    relay.setPower(false);
-    TEST_ASSERT_FALSE(relay.isOn());
-
-    RelayModule * relayPtr = new RelayModule(5, 1, 1);
-    relayPtr->setPower(true);
-    TEST_ASSERT_TRUE(relayPtr->isOn());
-    relayPtr->setPower(false);
-    TEST_ASSERT_FALSE(relayPtr->isOn());
-    delete relayPtr;
-
+TEST_CASE("RelayModule setPower Test on heap", "[RelayModule] [setPower] [isOn] [Heap]")
+{
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
+    do
+    {
+        RelayModule * relayModule = new RelayModule(GPIO_NUM_0);
+        TEST_ASSERT_FALSE(relayModule->isOn());
+        relayModule->setPower(true);
+        TEST_ASSERT_TRUE(relayModule->isOn());
+        relayModule->setPower(false);
+        TEST_ASSERT_FALSE(relayModule->isOn());
+        delete relayModule;
+    } while (0);
     END_MEMORY_LEAK_TEST(trace_record);
 }

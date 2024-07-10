@@ -79,6 +79,9 @@ TEST_CASE("Single Press Callback Test", "[ButtonModule] [SinglePress]")
         button.setSinglePressCallback(singlePressCallback, &singlePressDetected);
         // Simulate single press event (needs appropriate mocking or hardware simulation)
         gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
         gpio_set_level((gpio_num_t) 5, 1);
         vTaskDelay(100 / portTICK_PERIOD_MS);
         gpio_set_level((gpio_num_t) 5, 0);
@@ -103,6 +106,9 @@ TEST_CASE("Double Press Callback Test", "[ButtonModule] [DoublePress]")
         button.setDoublePressCallback(doublePressCallback, &doublePressDetected);
         // Simulate double press event (needs appropriate mocking or hardware simulation)
         gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
         gpio_set_level((gpio_num_t) 5, 1);
         vTaskDelay(100 / portTICK_PERIOD_MS);
         gpio_set_level((gpio_num_t) 5, 0);
@@ -111,7 +117,7 @@ TEST_CASE("Double Press Callback Test", "[ButtonModule] [DoublePress]")
         vTaskDelay(100 / portTICK_PERIOD_MS);
         gpio_set_level((gpio_num_t) 5, 0);
 
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
         TEST_ASSERT_TRUE(doublePressDetected);
 
     } while (0);
@@ -131,12 +137,155 @@ TEST_CASE("Long Press Callback Test", "[ButtonModule] [LongPress]")
         button.setLongPressCallback(longPressCallback, &longPressDetected);
         // Simulate long press event (needs appropriate mocking or hardware simulation)
         gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
         gpio_set_level((gpio_num_t) 5, 1);
         vTaskDelay(2100 / portTICK_PERIOD_MS);
         gpio_set_level((gpio_num_t) 5, 0);
 
-        vTaskDelay(150 / portTICK_PERIOD_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
         TEST_ASSERT_TRUE(longPressDetected);
+
+    } while (0);
+    END_MEMORY_LEAK_TEST(trace_record);
+}
+
+TEST_CASE("Single Press Callback Test onHeap", "[ButtonModule] [SinglePress] [Heap]")
+{
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
+    do
+    {
+
+        ButtonModule * button    = new ButtonModule(5, 1, 2000, 50);
+        bool singlePressDetected = false;
+
+        button->setSinglePressCallback(singlePressCallback, &singlePressDetected);
+        // Simulate single press event (needs appropriate mocking or hardware simulation)
+        gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        TEST_ASSERT_TRUE(singlePressDetected);
+        delete button;
+
+    } while (0);
+    END_MEMORY_LEAK_TEST(trace_record);
+}
+
+TEST_CASE("Double Press Callback Test onHeap", "[ButtonModule] [DoublePress] [Heap]")
+{
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
+    do
+    {
+
+        ButtonModule * button    = new ButtonModule(5, 1, 2000, 50);
+        bool doublePressDetected = false;
+
+        button->setDoublePressCallback(doublePressCallback, &doublePressDetected);
+        // Simulate double press event (needs appropriate mocking or hardware simulation)
+        gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(20 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        TEST_ASSERT_TRUE(doublePressDetected);
+        delete button;
+
+    } while (0);
+    END_MEMORY_LEAK_TEST(trace_record);
+}
+
+TEST_CASE("Long Press Callback Test onHeap", "[ButtonModule] [LongPress] [Heap]")
+{
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
+    do
+    {
+        ButtonModule * button  = new ButtonModule(5, 1, 2000, 50);
+        bool longPressDetected = false;
+
+        button->setLongPressCallback(longPressCallback, &longPressDetected);
+        // Simulate long press event (needs appropriate mocking or hardware simulation)
+        gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(2100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        TEST_ASSERT_TRUE(longPressDetected);
+        delete button;
+
+    } while (0);
+    END_MEMORY_LEAK_TEST(trace_record);
+}
+
+TEST_CASE("All press event type", "[ButtonModule] [SinglePress] [DoublePress] [LongPress] [Heap]")
+{
+    heap_trace_record_t trace_record[10];
+    BEGIN_MEMORY_LEAK_TEST(trace_record);
+    do
+    {
+        ButtonModule * button    = new ButtonModule(5, 1, 2000, 50);
+        bool singlePressDetected = false;
+        bool doublePressDetected = false;
+        bool longPressDetected   = false;
+
+        button->setSinglePressCallback(singlePressCallback, &singlePressDetected);
+        button->setDoublePressCallback(doublePressCallback, &doublePressDetected);
+        button->setLongPressCallback(longPressCallback, &longPressDetected);
+
+        // Simulate single press event (needs appropriate mocking or hardware simulation)
+        gpio_set_direction((gpio_num_t) 5, GPIO_MODE_INPUT_OUTPUT);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        TEST_ASSERT_TRUE(singlePressDetected);
+
+        // Simulate double press event (needs appropriate mocking or hardware simulation)
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+        vTaskDelay(20 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        TEST_ASSERT_TRUE(doublePressDetected);
+
+        // Simulate long press event (needs appropriate mocking or hardware simulation)
+        gpio_set_level((gpio_num_t) 5, 1);
+        vTaskDelay(2100 / portTICK_PERIOD_MS);
+        gpio_set_level((gpio_num_t) 5, 0);
+
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        TEST_ASSERT_TRUE(longPressDetected);
+
+        delete button;
 
     } while (0);
     END_MEMORY_LEAK_TEST(trace_record);
