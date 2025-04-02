@@ -1,6 +1,6 @@
 {
     "idf.flashType": "UART",
-    "idf.portWin": "COM9",
+    "idf.portWin": "COM3",
     "idf.adapterTargetName": "esp32",
     // "files.associations": {
     //     "vector": "cpp",
@@ -40,4 +40,7 @@
         "regex": "cpp",
         "new": "cpp"
     },
+    "idf.pythonInstallPath": "C:\\Users\\RonnyPC\\esptest53\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
+    "idf.espIdfPathWin": "C:\\Users\\RonnyPC\\esptest53\\v5.3\\esp-idf",
+    "idf.toolsPathWin": "C:\\Users\\RonnyPC\\esptest53\\.espressif",
 }

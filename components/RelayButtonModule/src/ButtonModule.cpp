@@ -2,6 +2,10 @@
 
 #include <esp_log.h>
 
+// fix gpio functions declaration
+#include <hal/gpio_hal.h>
+#include <driver/gpio.h>
+
 static const char * TAG = "ButtonModule";
 
 ButtonModule::ButtonModule(int8_t pin, uint8_t isActiveHigh, uint16_t longPressDurationMs, uint16_t debounceTimeMs):

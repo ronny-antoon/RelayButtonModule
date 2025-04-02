@@ -8,6 +8,10 @@
 #include <unity.h>
 #include <unity_fixture.h>
 
+// fix gpio functions declaration
+#include <hal/gpio_hal.h>
+#include <driver/gpio.h>
+
 #ifndef BEGIN_MEMORY_LEAK_TEST
 #define BEGIN_MEMORY_LEAK_TEST(trace_record)                                                                                       \
     do                                                                                                                             \
